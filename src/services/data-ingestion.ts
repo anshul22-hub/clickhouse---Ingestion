@@ -34,3 +34,4 @@ export async function ingestData(
     throw new Error(`Data ingestion failed: ${error.message}`);
   }
 }
+
