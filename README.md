@@ -1,149 +1,140 @@
-Here's a polished and professional `README.md` for your project:
+# ClickHouse & Flat File Bidirectional Data Ingestion Tool
+
+### Developed by: Piyush Kumar – Software Engineer Intern
+
+## Project Overview
+
+This web-based application facilitates **bidirectional data ingestion** between a **ClickHouse database** and **Flat File (CSV)** platforms. The tool allows users to:
+
+- Ingest data from ClickHouse to Flat File
+- Ingest data from Flat File to ClickHouse
+- Use JWT authentication for ClickHouse connection
+- Select columns for ingestion
+- Preview data before full ingestion
+- Report total records ingested upon completion
 
 ---
 
-```markdown
-# 📊 ClickHouse & Flat File Bidirectional Data Ingestion Tool
+## Tech Stack
 
-### 🚀 Developed by: Piyush Kumar – Software Engineer Intern
-
----
-
-## 📌 Project Overview
-
-This web-based application facilitates **bidirectional data ingestion** between a **ClickHouse database** and **Flat File (CSV)** platforms. It allows users to connect securely via JWT, select specific columns for transfer, preview data, and track ingestion status and count.
+- **Frontend**: React, TypeScript, EJS
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: ClickHouse
+- **Libraries/Tools**: Axios, JWT, CSV Parser, EJS Templates
 
 ---
 
-## 🌐 Features
+## Folder Structure
 
-- 🔄 **Bidirectional Ingestion**:
-  - ClickHouse → Flat File (CSV Export)
-  - Flat File → ClickHouse (CSV Import)
-- 🔐 JWT-based Authentication for ClickHouse
-- 📁 Schema & Column Selection UI
-- 👁️ Data Preview (first 100 records)
-- 📈 Record Count Reporting
-- ❌ Error Handling with Descriptive Messages
-- 🎨 Clean and Responsive UI
+project-root/ ├── server/ │ ├── package.json │ ├── tsconfig.json │ └── src/ │ ├── index.ts │ ├── routes.ts │ ├── controllers/ │ │ └── ingestionController.ts │ └── services/ │ ├── clickHouseService.ts │ └── fileService.ts ├── client/ │ ├── package.json │ ├── tsconfig.json │ ├── public/ │ │ └── index.html │ └── src/ │ ├── index.tsx │ ├── App.tsx │ └── components/ │ ├── ConnectionForm.tsx │ ├── TableSelector.tsx │ ├── DataPreview.tsx │ └── IngestionStatus.tsx └── README.md
+---
+
 
 ---
 
-## 🧰 Tech Stack
+## Setup Instructions
 
-| Layer      | Technology               |
-|------------|---------------------------|
-| Frontend   | React, TypeScript, EJS    |
-| Backend    | Node.js, Express, TypeScript |
-| Database   | ClickHouse                |
-| Others     | Axios, CSV Parser, JWT, EJS Templates |
+### Prerequisites
 
----
+Before setting up the project, make sure you have the following installed:
 
-## 🗂️ Folder Structure
+- **Node.js** (v18+)
+- **npm** (Node Package Manager) or **yarn** (Optional)
+- **Docker** (Optional, for running ClickHouse locally)
 
-```
-project-root/
-├── server/
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── src/
-│       ├── index.ts
-│       ├── routes.ts
-│       ├── controllers/
-│       │   └── ingestionController.ts
-│       └── services/
-│           ├── clickHouseService.ts
-│           └── fileService.ts
-├── client/
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── public/
-│   │   └── index.html
-│   └── src/
-│       ├── index.tsx
-│       ├── App.tsx
-│       └── components/
-│           ├── ConnectionForm.tsx
-│           ├── TableSelector.tsx
-│           ├── DataPreview.tsx
-│           └── IngestionStatus.tsx
-└── README.md
-```
-
----
-
-## ⚙️ Prerequisites
-
-- Node.js (v18+)
-- npm or yarn
-- Docker (to run ClickHouse locally, optional)
-
----
-
-## 🚀 Setup & Run Instructions
-
-### 🔧 Backend Setup
+### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/your-username/clickhouse-flatfile-ingestion-tool.git
+cd clickhouse-flatfile-ingestion-tool
+2. Backend Setup
+Navigate to the server directory and install the necessary dependencies:
+
+bash
+Copy
+Edit
 cd server
 npm install
-npm run dev
-```
+Configuration
+Create a .env file in the server folder to set up your ClickHouse connection details:
 
-### 🌐 Frontend Setup
+ini
+Copy
+Edit
+CLICKHOUSE_HOST=localhost
+CLICKHOUSE_PORT=8123
+CLICKHOUSE_DATABASE=default
+CLICKHOUSE_USER=default
+CLICKHOUSE_PASSWORD=your-jwt-token
+3. Frontend Setup
+Navigate to the client directory and install the necessary dependencies:
 
-```bash
+bash
+Copy
+Edit
 cd client
 npm install
+Configuration
+You can modify any configuration in the frontend as needed in the client/src/components/ConnectionForm.tsx file.
+
+4. Run the Application
+Backend
+In the server directory, start the backend server:
+
+bash
+Copy
+Edit
+cd server
+npm run dev
+The backend will run on http://localhost:5000.
+
+Frontend
+In the client directory, start the frontend application:
+
+bash
+Copy
+Edit
+cd client
 npm start
-```
+The frontend will be available on http://localhost:3000.
 
----
+Usage
+Data Ingestion
+ClickHouse → Flat File: After selecting ClickHouse as the data source, choose a table and select columns to export. Click "Start Ingestion" to download the CSV file.
 
-## 🧪 Testing & Datasets
+Flat File → ClickHouse: Select a CSV file and configure the columns to be imported. The backend will ingest the data into ClickHouse.
 
-- Use official ClickHouse sample datasets:
-  - [uk_price_paid](https://clickhouse.com/docs/en/getting-started/example-datasets/uk-price-paid/)
-  - [ontime](https://clickhouse.com/docs/en/getting-started/example-datasets/ontime/)
+JWT Authentication
+The application uses JWT for authentication when accessing the ClickHouse database. Ensure you pass the correct token in the configuration form on the frontend.
 
-### ✅ Test Cases:
+Data Preview
+Before ingestion, you can preview the first 100 records by clicking the Preview button. This helps ensure the selected columns are correct.
 
-1. ClickHouse → Flat File (select columns & verify count)
-2. Flat File → ClickHouse (upload CSV & verify data)
-3. Auth Failures (invalid JWT, missing parameters)
-4. (Bonus) Join multiple ClickHouse tables before export
-5. (Optional) Preview data before ingestion
+Testing
+The tool supports several test cases to validate functionality:
 
----
+Single ClickHouse Table → Flat File (CSV): Verify count and columns.
 
-## 📸 Screenshots (optional)
+Flat File (CSV) → New ClickHouse Table: Verify successful ingestion and data integrity.
 
-> Include any screenshots or demo video link here
+Multi-Table Join (Bonus): Allows joining multiple ClickHouse tables and exporting the result to a Flat File.
 
----
+Authentication Failures: Simulate invalid JWT and check error handling.
 
-## 📼 Optional Demo
+Data Preview: Check preview before full ingestion.
 
-> Link to demo video: [YouTube/Google Drive link here]
+You can use official ClickHouse example datasets for testing.
 
----
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🤖 AI Tooling (if used)
+Contact
+Piyush Kumar
 
-> See `prompts.txt` for AI prompts used during development.
+Email: [your-email@example.com]
 
----
+GitHub: [Your GitHub Profile Link]
 
-## 📬 Contact
+LinkedIn: [Your LinkedIn Profile Link]
 
-**Piyush Kumar**  
-Email: [your-email@example.com]  
-LinkedIn: [Your LinkedIn Profile]  
-GitHub: [Your GitHub Link]
-
----
-
-```
-
-Let me know if you'd like me to generate the `prompts.txt` as well, or want to insert real screenshots/demo links into this!
+Feel free to reach out if you have any questions!
