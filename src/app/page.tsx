@@ -17,6 +17,8 @@ import {
 } from "@/services/flat-file";
 import { ingestData } from "@/services/data-ingestion";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 
 export default function Home() {
   const [sourceType, setSourceType] = useState<"clickhouse" | "flatfile">("clickhouse");
@@ -36,6 +38,9 @@ export default function Home() {
   const [ingestionStatus, setIngestionStatus] = useState<string>("");
   const [recordCount, setRecordCount] = useState<number>(0);
   const { toast } = useToast();
+  const [joinCondition, setJoinCondition] = useState<string>("");
+  const [ingestionProgress, setIngestionProgress] = useState<number>(0);
+  const [showPreview, setShowPreview] = useState<boolean>(false);
 
   const handleSourceTypeChange = (value: "clickhouse" | "flatfile") => {
     setSourceType(value);
@@ -79,17 +84,42 @@ export default function Home() {
   const handleIngestData = async () => {
     try {
       setIngestionStatus("Ingesting data...");
-      const count = await ingestData(
-        sourceType,
-        sourceType === "clickhouse" ? clickhouseConfig : flatFileConfig,
-        selectedColumns
-      );
-      setRecordCount(count);
-      setIngestionStatus("Data ingested successfully.");
-      toast({
-        title: "Success",
-        description: `Data ingested successfully. Total records ingested: ${count}`,
-      });
+      setIngestionProgress(0);
+
+      // Simulate ingestion with progress updates
+      const totalSteps = 10;
+      let currentStep = 0;
+
+      const intervalId = setInterval(() => {
+        currentStep++;
+        const progress = (currentStep / totalSteps) * 100;
+        setIngestionProgress(progress);
+
+        if (currentStep >= totalSteps) {
+          clearInterval(intervalId);
+
+          // Perform actual data ingestion here
+          ingestData(
+            sourceType,
+            sourceType === "clickhouse" ? clickhouseConfig : flatFileConfig,
+            selectedColumns
+          ).then((count) => {
+            setRecordCount(count);
+            setIngestionStatus("Data ingested successfully.");
+            toast({
+              title: "Success",
+              description: `Data ingested successfully. Total records ingested: ${count}`,
+            });
+          }).catch((error: any) => {
+            setIngestionStatus(`Error ingesting data: ${error.message}`);
+            toast({
+              title: "Error",
+              description: `Error ingesting data: ${error.message}`,
+              variant: "destructive",
+            });
+          });
+        }
+      }, 500);
     } catch (error: any) {
       setIngestionStatus(`Error ingesting data: ${error.message}`);
       toast({
@@ -98,6 +128,11 @@ export default function Home() {
         variant: "destructive",
       });
     }
+  };
+
+  const handlePreviewData = async () => {
+    // Simulate data preview functionality
+    setShowPreview(true);
   };
 
   return (
@@ -147,6 +182,15 @@ export default function Home() {
               <Label htmlFor="jwtToken">JWT Token</Label>
               <Input id="jwtToken" name="jwtToken" type="password" onChange={handleInputChange(setClickhouseConfig)} />
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="joinCondition">Join Condition</Label>
+              <Textarea
+                id="joinCondition"
+                name="joinCondition"
+                placeholder="Enter JOIN condition (e.g., table1.id = table2.table1_id)"
+                onChange={(e) => setJoinCondition(e.target.value)}
+              />
+            </div>
           </CardContent>
         </Card>
       )}
@@ -191,14 +235,31 @@ export default function Home() {
 
       <div className="flex justify-center space-x-4 mt-4">
         <Button onClick={handleLoadColumns}>Load Columns</Button>
-        <Button onClick={handleIngestData}>Ingest Data</Button>
+        <Button onClick={handlePreviewData} disabled={columnNames.length === 0}>
+          Preview Data
+        </Button>
+        <Button onClick={handleIngestData} disabled={selectedColumns.length === 0}>Ingest Data</Button>
       </div>
 
       {ingestionStatus && (
         <div className="mt-4 text-center">
           <p>{ingestionStatus}</p>
+          {ingestionProgress > 0 && (
+            <Progress value={ingestionProgress} className="mt-2" />
+          )}
           {recordCount > 0 && <p>Total records ingested: {recordCount}</p>}
         </div>
+      )}
+
+      {showPreview && (
+        <Card className="w-full max-w-md space-y-4 mt-4">
+          <CardHeader>
+            <CardTitle>Data Preview (First 100 Records)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Simulated data preview. Implement actual data fetching and display here.</p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

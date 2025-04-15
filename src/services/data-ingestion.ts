@@ -10,13 +10,17 @@ async function sleep(ms: number) {
 export async function ingestData(
   sourceType: "clickhouse" | "flatfile",
   config: ClickHouseConfig | FlatFileConfig,
-  selectedColumns: string[]
+  selectedColumns: string[],
+  joinCondition?: string
 ): Promise<number> {
   try {
     // Simulate data ingestion process based on source type
     console.log(`Starting ingestion from ${sourceType}...`);
     console.log("Config:", config);
     console.log("Selected columns:", selectedColumns);
+    if (joinCondition) {
+      console.log("Join condition:", joinCondition);
+    }
 
     // Simulate some work
     await sleep(2000);
@@ -30,4 +34,3 @@ export async function ingestData(
     throw new Error(`Data ingestion failed: ${error.message}`);
   }
 }
-
