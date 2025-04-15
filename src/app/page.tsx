@@ -102,7 +102,8 @@ export default function Home() {
           ingestData(
             sourceType,
             sourceType === "clickhouse" ? clickhouseConfig : flatFileConfig,
-            selectedColumns
+            selectedColumns,
+            joinCondition
           ).then((count) => {
             setRecordCount(count);
             setIngestionStatus("Data ingested successfully.");
@@ -137,7 +138,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <h1 className="text-2xl font-bold mb-4">DataXStream</h1>
+      <h1 className="text-2xl font-bold mb-4">ClickHouse</h1>
       <Card className="w-full max-w-md space-y-4">
         <CardHeader>
           <CardTitle>Source Selection</CardTitle>
