@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -16,6 +15,8 @@ import {
   FlatFileConfig,
   getFlatFileSchema,
 } from "@/services/flat-file";
+import { ingestData } from "@/services/data-ingestion";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [sourceType, setSourceType] = useState<"clickhouse" | "flatfile">("clickhouse");
@@ -34,6 +35,7 @@ export default function Home() {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [ingestionStatus, setIngestionStatus] = useState<string>("");
   const [recordCount, setRecordCount] = useState<number>(0);
+  const { toast } = useToast();
 
   const handleSourceTypeChange = (value: "clickhouse" | "flatfile") => {
     setSourceType(value);
@@ -66,18 +68,35 @@ export default function Home() {
       setIngestionStatus("Columns loaded successfully.");
     } catch (error: any) {
       setIngestionStatus(`Error loading columns: ${error.message}`);
+      toast({
+        title: "Error",
+        description: `Error loading columns: ${error.message}`,
+        variant: "destructive",
+      });
     }
   };
 
   const handleIngestData = async () => {
     try {
       setIngestionStatus("Ingesting data...");
-      // Simulate data ingestion process
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setRecordCount(1000);
+      const count = await ingestData(
+        sourceType,
+        sourceType === "clickhouse" ? clickhouseConfig : flatFileConfig,
+        selectedColumns
+      );
+      setRecordCount(count);
       setIngestionStatus("Data ingested successfully.");
+      toast({
+        title: "Success",
+        description: `Data ingested successfully. Total records ingested: ${count}`,
+      });
     } catch (error: any) {
       setIngestionStatus(`Error ingesting data: ${error.message}`);
+      toast({
+        title: "Error",
+        description: `Error ingesting data: ${error.message}`,
+        variant: "destructive",
+      });
     }
   };
 
